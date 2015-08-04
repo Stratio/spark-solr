@@ -59,7 +59,7 @@ public class RDDProcessorTestBase extends TestSolrCloudClusterSupport implements
     createCollection(collection, numShards, replicationFactor, numShards /* maxShardsPerNode */, confName, confDir);
 
     // index some docs into both collections
-    int numDocsIndexed = indexDocs(zkHost, collection, inputDocs);
+    int numDocsIndexed = indexDocs(zkHost, collection, false, inputDocs);
     Thread.sleep(1000L);
 
     // verify docs got indexed ... relies on soft auto-commits firing frequently
@@ -70,7 +70,7 @@ public class RDDProcessorTestBase extends TestSolrCloudClusterSupport implements
       numFound == (long)numDocsIndexed);
   }
 
-  protected int indexDocs(String zkHost, String collection, String[] inputDocs) {
+  protected int indexDocs(String zkHost, String collection, Boolean splitDefaultIndex, String[] inputDocs) {
     JavaRDD<String> input = jsc.parallelize(Arrays.asList(inputDocs), 1);
     JavaRDD<SolrInputDocument> docs = input.map(new Function<String, SolrInputDocument>() {
       public SolrInputDocument call(String row) throws Exception {
@@ -83,7 +83,7 @@ public class RDDProcessorTestBase extends TestSolrCloudClusterSupport implements
         return doc;
       }
     });
-    SolrSupport.indexDocs(zkHost, collection, 1, docs);
+    SolrSupport.indexDocs(zkHost, collection, false, 1, docs);
     return inputDocs.length;
   }
 }

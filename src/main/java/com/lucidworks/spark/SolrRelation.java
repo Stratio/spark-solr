@@ -31,6 +31,7 @@ public class SolrRelation extends BaseRelation implements Serializable, TableSca
   public static String SOLR_QUERY_PARAM = "query";
   public static String SOLR_SPLIT_FIELD_PARAM = "split_field";
   public static String SOLR_SPLITS_PER_SHARD_PARAM = "splits_per_shard";
+  public static String SOLR_SPLIT_DEFAULT_INDEX= "split_default_index";
 
   protected String splitFieldName;
   protected int splitsPerShard = 1;
@@ -38,6 +39,8 @@ public class SolrRelation extends BaseRelation implements Serializable, TableSca
   protected SolrRDD solrRDD;
   protected StructType schema;
   protected transient SQLContext sqlContext;
+  protected Boolean splitDefaultIndex;
+
 
   public SolrRelation() {}
 
@@ -56,6 +59,8 @@ public class SolrRelation extends BaseRelation implements Serializable, TableSca
     String collection = requiredParam(config, SOLR_COLLECTION_PARAM);
     String query = optionalParam(config, SOLR_QUERY_PARAM, "*:*");
     splitFieldName = optionalParam(config, SOLR_SPLIT_FIELD_PARAM, null);
+    splitDefaultIndex = Boolean.parseBoolean(optionalParam(config, SOLR_SPLIT_DEFAULT_INDEX, "false"));
+
     if (splitFieldName != null)
       splitsPerShard = Integer.parseInt(optionalParam(config, SOLR_SPLITS_PER_SHARD_PARAM, "10"));
     solrRDD = new SolrRDD(zkHost, collection);
@@ -241,6 +246,6 @@ public class SolrRelation extends BaseRelation implements Serializable, TableSca
         return doc;
       }
     });
-    SolrSupport.indexDocs(solrRDD.zkHost, solrRDD.collection, 100, docs);
+    SolrSupport.indexDocs(solrRDD.zkHost, solrRDD.collection, splitDefaultIndex, 100, docs);
   }
 }
