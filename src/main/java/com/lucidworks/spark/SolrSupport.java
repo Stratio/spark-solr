@@ -142,15 +142,25 @@ public class SolrSupport implements Serializable {
                                         final int batchSize,
                                         JavaDStream<SolrInputDocument> docs)
   {
+    indexDStreamOfDocs(zkHost, collection, false, batchSize, docs);
+  }
+
+  public static void indexDStreamOfDocs(final String zkHost,
+                                        final String collection,
+                                        final Boolean splitDefaultIndex,
+                                        final int batchSize,
+                                        JavaDStream<SolrInputDocument> docs)
+  {
     docs.foreachRDD(
-      new Function<JavaRDD<SolrInputDocument>, Void>() {
-        public Void call(JavaRDD<SolrInputDocument> solrInputDocumentJavaRDD) throws Exception {
-          indexDocs(zkHost, collection, false, batchSize, solrInputDocumentJavaRDD);//Default index activated in DStream
-          return null;
-        }
-      }
+            new Function<JavaRDD<SolrInputDocument>, Void>() {
+              public Void call(JavaRDD<SolrInputDocument> solrInputDocumentJavaRDD) throws Exception {
+                indexDocs(zkHost, collection, splitDefaultIndex, batchSize, solrInputDocumentJavaRDD);
+                return null;
+              }
+            }
     );
   }
+
 
   public static void indexDocs(final String zkHost,
                                     final String collection,
