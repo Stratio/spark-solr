@@ -83,7 +83,7 @@ public class RDDProcessorTestBase extends TestSolrCloudClusterSupport implements
         return doc;
       }
     });
-    SolrSupport.indexDocs(zkHost, collection, false, 1, docs);
+    SolrSupport.indexDocs(zkHost, collection, splitDefaultIndex, 1, docs);
     return inputDocs.length;
   }
 }
