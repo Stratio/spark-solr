@@ -147,14 +147,14 @@ public class SolrSupport implements Serializable {
 
   public static void indexDStreamOfDocs(final String zkHost,
                                         final String collection,
-                                        final Boolean splitDefaultIndex,
+                                        final Boolean skipDefaultIndex,
                                         final int batchSize,
                                         JavaDStream<SolrInputDocument> docs)
   {
     docs.foreachRDD(
             new Function<JavaRDD<SolrInputDocument>, Void>() {
               public Void call(JavaRDD<SolrInputDocument> solrInputDocumentJavaRDD) throws Exception {
-                indexDocs(zkHost, collection, splitDefaultIndex, batchSize, solrInputDocumentJavaRDD);
+                indexDocs(zkHost, collection, skipDefaultIndex, batchSize, solrInputDocumentJavaRDD);
                 return null;
               }
             }
@@ -164,7 +164,7 @@ public class SolrSupport implements Serializable {
 
   public static void indexDocs(final String zkHost,
                                     final String collection,
-                                    final Boolean splitDefaultIndex,
+                                    final Boolean skipDefaultIndex,
                                     final int batchSize,
                                     JavaRDD<SolrInputDocument> docs) {
 
@@ -176,7 +176,7 @@ public class SolrSupport implements Serializable {
           Date indexedAt = new Date();
           while (solrInputDocumentIterator.hasNext()) {
             SolrInputDocument inputDoc = solrInputDocumentIterator.next();
-            if (!splitDefaultIndex)
+            if (!skipDefaultIndex)
               inputDoc.setField("_indexed_at_tdt", indexedAt);
             batch.add(inputDoc);
             if (batch.size() >= batchSize)

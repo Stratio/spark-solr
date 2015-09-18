@@ -82,7 +82,10 @@ The `com.lucidworks.spark.SolrSupport` class provides static helper functions fo
     String zkHost = cli.getOptionValue("zkHost", "localhost:9983");
     String collection = cli.getOptionValue("collection", "collection1");
     int batchSize = Integer.parseInt(cli.getOptionValue("batchSize", "10"));
-    SolrSupport.indexDStreamOfDocs(zkHost, collection, batchSize, docs);
+    // skipDefaultIndex: true -> skip the index, false -> write the index
+    // In this branch is true by default
+    Boolean skipDefaultIndex = true
+    SolrSupport.indexDStreamOfDocs(zkHost, collection, skipDefaultIndex , batchSize, docs);
 ```
 
 Developing a Spark Application
